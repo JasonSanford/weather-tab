@@ -1,0 +1,31 @@
+.App {
+  height: 100%;
+  position: relative;
+}
+
+.SettingsButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 10px;
+  z-index: 1000;
+  cursor: pointer;
+  color: #777;
+  font-size: 1.4em;
+}
+
+.SettingsButton.fa-spin {
+  animation: fa-spin 6s infinite linear;
+}
+
+.ModalClose {
+  position: absolute;
+  top: 0;
+  left:0;
+  cursor: pointer;
+  padding-left: -40px;
+}
+
+.WeatherMap {
+  height: 100%;
+}

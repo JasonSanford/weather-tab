@@ -1,0 +1,14 @@
+{
+  "name": "Weather Tab",
+  "description": "Show your current location and weather in new tabs",
+  "version": "0.2",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "content_security_policy": "script-src 'self' https://api.darksky.net; object-src 'self'",
+  "permissions": [
+    "geolocation",
+    "https://api.darksky.net/*"
+  ],
+  "manifest_version": 2
+}
