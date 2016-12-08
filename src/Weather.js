@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import distance from 'turf-distance';
+import { Glyphicon } from 'react-bootstrap';
 
 import DarkSky from './darksky'
 import { DARKSKEY_KEY } from './constants';
@@ -16,7 +17,7 @@ class Weather extends Component {
     this.darkSkyClient = new DarkSky(DARKSKEY_KEY);
 
     this.state = {
-      temperature: '',
+      temperature: null,
       summary: '',
       mapCenter: props.mapCenter
     };
@@ -63,12 +64,26 @@ class Weather extends Component {
   }
 
   render() {
+    const temp = this.renderTemperature();
+
     return (
       <div className='Weather'>
-        <h2 className='Temperature'>{this.state.temperature}</h2>
+        <h2 className='Temperature'>{temp}</h2>
         <h3 className='Summary'>{this.state.summary}</h3>
       </div>
     );
+  }
+
+  renderTemperature() {
+    if (this.state.temperature) {
+      return this.state.temperature;
+    } else {
+      return (
+        <Glyphicon
+          glyph='refresh'
+          className='fa-spin' />
+      );
+    }
   }
 
   updateWeather() {

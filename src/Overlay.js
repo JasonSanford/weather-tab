@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import MapboxClient from 'mapbox';
-import DarkSky from './darksky'
 
 import { MAPBOX_ACCESS_TOKEN } from './constants';
-import Weather from './Weather'
+import Weather from './Weather';
 
 import './Overlay.css';
 
