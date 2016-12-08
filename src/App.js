@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Map, TileLayer } from 'react-leaflet';
+import { Map, TileLayer, Marker } from 'react-leaflet';
 import { Button, Glyphicon, Modal } from 'react-bootstrap';
 import ToggleButton from 'react-toggle-button';
 import classNames from 'classnames';
+import L from 'leaflet';
 
 import * as constants from './constants'
 import { backgrounds } from './backgrounds';
@@ -28,6 +29,11 @@ class App extends Component {
     this.onMouseOutSettingsButton  = this.onMouseOutSettingsButton.bind(this);
     this.onMapMoveEnd              = this.onMapMoveEnd.bind(this);
 
+    this.userLocationIcon = L.divIcon({
+      className: 'LocationIcon',
+      iconSize: [20, 20]
+    });
+
     const location = storage.getItem('lastLocation', constants.DEFAULT_LOCATION);
     const zoom = storage.getItem('zoom', 13);
     const showMap = storage.getItem('showMap', true);
@@ -38,6 +44,7 @@ class App extends Component {
       geolocation,
       location,
       zoom,
+      userLocation: null,
       showModal: false,
       settingsButtonHovered: false
     };
@@ -60,9 +67,10 @@ class App extends Component {
   }
 
   positionSuccess(position) {
-    let location = [position.coords.latitude, position.coords.longitude]
+    let location = [position.coords.latitude, position.coords.longitude];
+    let userLocation = location;
 
-    this.setState({ location });
+    this.setState({ location, userLocation });
   }
 
   positionError(error) {
@@ -112,10 +120,11 @@ class App extends Component {
 
   onToggleGeolocation(value) {
     const geolocation = !value;
+    const userLocation = null;
 
     storage.setItem('geolocation', geolocation);
 
-    this.setState({ geolocation }, function () {
+    this.setState({ geolocation, userLocation }, function () {
       if (geolocation) {
         this.updateLocation();
       }
@@ -187,6 +196,17 @@ class App extends Component {
 
   renderMap() {
     if (this.state.showMap) {
+      let marker;
+
+      if (this.state.geolocation && this.state.userLocation) {
+        marker = (
+          <Marker
+            position={this.state.userLocation}
+            icon={this.userLocationIcon}
+            clickable={false} />
+        );
+      }
+
       return (
         <Map
           center={this.state.location}
@@ -197,6 +217,7 @@ class App extends Component {
           <TileLayer
             url={tileUrl}
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' />
+          {marker}
         </Map>
       );
     }

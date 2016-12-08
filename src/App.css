@@ -54,3 +54,21 @@
 .WeatherMap {
   height: 100%;
 }
+
+.LocationIcon {
+  background-color: #60A4F0;
+  border-radius: 30px;
+  -webkit-animation: dotPulse 2000ms 0ms infinite;
+  border: 3px solid white;
+}
+
+@-webkit-keyframes dotPulse {
+  0% {
+    box-shadow: rgba(96, 164, 240, 1) 0px 0px 10px -50px;
+    opacity: 100%;
+  }
+  100% {
+    box-shadow: rgba(96, 164, 240, 0) 0px 0px 0px 35px;
+    opacity: 0%;
+  }
+}
