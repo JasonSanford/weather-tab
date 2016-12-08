@@ -19,23 +19,25 @@ class Weather extends Component {
     this.state = {
       temperature: null,
       summary: '',
-      mapCenter: props.mapCenter
+      location: props.location
     };
+
+    this.updateWeather();
   }
 
   componentWillReceiveProps(nextProps) {
-    const weShouldUpdateWeather = this.shouldFetchFreshWeather(nextProps.mapCenter);
+    const weShouldUpdateWeather = this.shouldFetchFreshWeather(nextProps.location);
 
     if (weShouldUpdateWeather) {
       this.setState({
-        mapCenter: nextProps.mapCenter
+        location: nextProps.location
       }, function () {
         this.updateWeather();
       }.bind(this));
     }
   }
 
-  shouldFetchFreshWeather(nextMapCenter) {
+  shouldFetchFreshWeather(nextLocation) {
     if (!this.haveMadeInitialFetch) {
       return true;
     }
@@ -45,7 +47,7 @@ class Weather extends Component {
       properties: null,
       geometry: {
         type: 'Point',
-        coordinates: [this.state.mapCenter[1], this.state.mapCenter[0]]
+        coordinates: [this.state.location[1], this.state.location[0]]
       }
     };
 
@@ -54,7 +56,7 @@ class Weather extends Component {
       properties: null,
       geometry: {
         type: 'Point',
-        coordinates: [nextMapCenter[1], nextMapCenter[0]]
+        coordinates: [nextLocation[1], nextLocation[0]]
       }
     };
 
@@ -89,7 +91,7 @@ class Weather extends Component {
   updateWeather() {
     this.haveMadeInitialFetch = true;
 
-    this.darkSkyClient.forecast(this.state.mapCenter[0], this.state.mapCenter[1], {}, function (error, response) {
+    this.darkSkyClient.forecast(this.state.location[0], this.state.location[1], {}, function (error, response) {
       if (error) {
         return console.log('Forecast Error: ', error);
       }

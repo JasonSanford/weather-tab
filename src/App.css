@@ -19,6 +19,30 @@
   animation: fa-spin 6s infinite linear;
 }
 
+.Settings h2 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+.ToggleContainer {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.Toggle {
+  display: inline-block !important;
+}
+
+.Setting {
+  text-align: center;
+  padding: 0 10px;
+}
+
+.Setting p {
+  margin-bottom: 0;
+}
+
 .ModalClose {
   position: absolute;
   top: 0;

@@ -28,17 +28,23 @@ class App extends Component {
     this.onMouseOutSettingsButton  = this.onMouseOutSettingsButton.bind(this);
     this.onMapMoveEnd              = this.onMapMoveEnd.bind(this);
 
-    const location = storage.getItem('lastLocation', constants.DEFAULT_LOCATION)
+    const location = storage.getItem('lastLocation', constants.DEFAULT_LOCATION);
+    const zoom = storage.getItem('zoom', 13);
+    const showMap = storage.getItem('showMap', true);
+    const geolocation = storage.getItem('geolocation', true);
 
     this.state = {
-      showMap: storage.getItem('showMap', true),
-      location: location,
-      mapCenter: location,
+      showMap,
+      geolocation,
+      location,
+      zoom,
       showModal: false,
       settingsButtonHovered: false
     };
 
-    this.updateLocation();
+    if (geolocation) {
+      this.updateLocation();
+    }
   }
 
   updateLocation() {
@@ -56,11 +62,7 @@ class App extends Component {
   positionSuccess(position) {
     let location = [position.coords.latitude, position.coords.longitude]
 
-    storage.setItem('lastLocation', location);
-
-    this.setState({
-      location: location
-    });
+    this.setState({ location });
   }
 
   positionError(error) {
@@ -82,10 +84,13 @@ class App extends Component {
 
   onMapMoveEnd(event) {
     const center = event.target.getCenter();
+    const lastLocation = [center.lat, center.lng];
+    const zoom = event.target.getZoom();
 
-    this.setState({
-      mapCenter: [center.lat, center.lng]
-    });
+    storage.setItem('lastLocation', lastLocation);
+    storage.setItem('zoom', zoom);
+
+    this.setState({ lastLocation, zoom });
   }
 
   openModal(event) {
@@ -103,6 +108,18 @@ class App extends Component {
     storage.setItem('showMap', showMap);
 
     this.setState({ showMap });
+  }
+
+  onToggleGeolocation(value) {
+    const geolocation = !value;
+
+    storage.setItem('geolocation', geolocation);
+
+    this.setState({ geolocation }, function () {
+      if (geolocation) {
+        this.updateLocation();
+      }
+    }.bind(this));
   }
 
   render() {
@@ -123,16 +140,38 @@ class App extends Component {
           onClick={this.openModal} />
         {map}
         <Modal
+          className='Settings'
           show={this.state.showModal}
           onHide={this.closeModal}>
           <Modal.Body>
             <h2>Settings</h2>
-            <ToggleButton
-              value={this.state.showMap}
-              onToggle={this.onToggleShowMap.bind(this)}
-              thumbStyle={{borderRadius: 2}}
-              trackStyle={{borderRadius: 2}} />
-            Show Map?
+            <div className='row'>
+              <div className='col-md-4 col-md-offset-2 Setting'>
+                <div className='well'>
+                  <div className='ToggleContainer'>
+                    <ToggleButton
+                      className='Toggle'
+                      value={this.state.showMap}
+                      onToggle={this.onToggleShowMap.bind(this)}
+                      thumbStyle={{borderRadius: 2}}
+                      trackStyle={{borderRadius: 2}} />
+                  </div>
+                  <p>Show Map?</p>
+                </div>
+              </div>
+              <div className='col-md-4 Setting'>
+                <div className='well'>
+                  <div className='ToggleContainer'>
+                    <ToggleButton
+                      value={this.state.geolocation}
+                      onToggle={this.onToggleGeolocation.bind(this)}
+                      thumbStyle={{borderRadius: 2}}
+                      trackStyle={{borderRadius: 2}} />
+                  </div>
+                  <p>Geolocation?</p>
+                </div>
+              </div>
+            </div>
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.closeModal}>
@@ -141,7 +180,7 @@ class App extends Component {
             </Button>
           </Modal.Footer>
         </Modal>
-        <Overlay mapCenter={this.state.mapCenter} />
+        <Overlay location={this.state.location} />
       </div>
     );
   }
@@ -151,7 +190,7 @@ class App extends Component {
       return (
         <Map
           center={this.state.location}
-          zoom={13}
+          zoom={this.state.zoom}
           zoomControl={false}
           className='WeatherMap'
           onMoveEnd={this.onMapMoveEnd}>

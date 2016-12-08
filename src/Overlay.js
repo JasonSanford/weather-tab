@@ -13,21 +13,21 @@ class Overlay extends Component {
     this.mapboxClient = new MapboxClient(MAPBOX_ACCESS_TOKEN);
 
     this.state = {
-      mapCenter: props.mapCenter,
+      location: props.location,
       address: ''
     };
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      mapCenter: nextProps.mapCenter
+      location: nextProps.location
     }, this.updateAddress.bind(this));
   }
 
   render() {
     return (
       <div className='Overlay'>
-        <Weather mapCenter={this.state.mapCenter} />
+        <Weather location={this.state.location} />
         <h3 className='Address'>{this.state.address}</h3>
       </div>
     );
@@ -37,8 +37,8 @@ class Overlay extends Component {
     let address = '';
 
     const location = {
-      latitude: this.state.mapCenter[0],
-      longitude: this.state.mapCenter[1]
+      latitude: this.state.location[0],
+      longitude: this.state.location[1]
     };
 
     this.mapboxClient.geocodeReverse(location, function (error, response) {
