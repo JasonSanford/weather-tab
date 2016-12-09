@@ -148,6 +148,8 @@ class App extends Component {
     const mapId = checked ? 'random' : this.state.mapId;
     const mapTileUrl = this.getMapTileUrl(mapId);
 
+    storage.setItem('mapId', mapId);
+
     this.setState({
       randomMap: checked,
       mapTileUrl
@@ -157,6 +159,8 @@ class App extends Component {
   onMapChange(event) {
     const mapId = event.target.value;
     const mapTileUrl = this.getMapTileUrl(mapId);
+
+    storage.setItem('mapId', mapId);
 
     this.setState({ mapId, mapTileUrl });
   }
