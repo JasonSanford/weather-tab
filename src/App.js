@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import { Button, Glyphicon, Modal } from 'react-bootstrap';
+import Checkbox from 'rc-checkbox';
+import Radio from 'rc-radio';
 import ToggleButton from 'react-toggle-button';
 import classNames from 'classnames';
 import L from 'leaflet';
 
 import * as constants from './constants'
 import { backgrounds } from './backgrounds';
-import { maps } from './maps';
+import { TileMap } from './tilemap';
 import * as storage from './storage';
 import Overlay from './Overlay';
 
+import 'rc-checkbox/assets/index.css';
 import './App.css';
 
 const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-
-const randomMap = maps[Math.floor(Math.random() * maps.length)];
-const tileUrl = `https://api.mapbox.com/styles/v1/${randomMap}/tiles/256/{z}/{x}/{y}@2x?access_token=${constants.MAPBOX_ACCESS_TOKEN}`
 
 class App extends Component {
   constructor() {
@@ -34,16 +34,22 @@ class App extends Component {
       iconSize: [20, 20]
     });
 
+    const mapId = storage.getItem('mapId', 'random');
+
     const location = storage.getItem('lastLocation', constants.DEFAULT_LOCATION);
     const zoom = storage.getItem('zoom', 13);
     const showMap = storage.getItem('showMap', true);
     const geolocation = storage.getItem('geolocation', true);
+    const mapTileUrl = this.getMapTileUrl(mapId);
 
     this.state = {
       showMap,
       geolocation,
       location,
       zoom,
+      mapTileUrl,
+      randomMap: (mapId === 'random'),
+      mapId: (mapId === 'random' ? 1 : mapId),
       userLocation: null,
       showModal: false,
       settingsButtonHovered: false
@@ -52,6 +58,12 @@ class App extends Component {
     if (geolocation) {
       this.updateLocation();
     }
+  }
+
+  getMapTileUrl(mapId) {
+    const map = (mapId === 'random') ? TileMap.random() : TileMap.byId(mapId);
+
+    return `https://api.mapbox.com/styles/v1/${map.mapboxId}/tiles/256/{z}/{x}/{y}@2x?access_token=${map.token}`
   }
 
   updateLocation() {
@@ -131,6 +143,24 @@ class App extends Component {
     }.bind(this));
   }
 
+  onChangeRandomMap(event) {
+    const checked = event.target.checked;
+    const mapId = checked ? 'random' : this.state.mapId;
+    const mapTileUrl = this.getMapTileUrl(mapId);
+
+    this.setState({
+      randomMap: checked,
+      mapTileUrl
+    });
+  }
+
+  onMapChange(event) {
+    const mapId = event.target.value;
+    const mapTileUrl = this.getMapTileUrl(mapId);
+
+    this.setState({ mapId, mapTileUrl });
+  }
+
   render() {
     let settingsButtonClassName = classNames({
       'SettingsButton': true,
@@ -155,8 +185,9 @@ class App extends Component {
           <Modal.Body>
             <h2>Settings</h2>
             <div className='row'>
-              <div className='col-md-4 col-md-offset-2 Setting'>
+              <div className='col-md-4 Setting text-centered'>
                 <div className='well'>
+                  <h4>Show Map</h4>
                   <div className='ToggleContainer'>
                     <ToggleButton
                       className='Toggle'
@@ -165,11 +196,11 @@ class App extends Component {
                       thumbStyle={{borderRadius: 2}}
                       trackStyle={{borderRadius: 2}} />
                   </div>
-                  <p>Show Map?</p>
                 </div>
               </div>
-              <div className='col-md-4 Setting'>
+              <div className='col-md-4 Setting middle text-centered'>
                 <div className='well'>
+                  <h4>Geolocation</h4>
                   <div className='ToggleContainer'>
                     <ToggleButton
                       value={this.state.geolocation}
@@ -177,7 +208,35 @@ class App extends Component {
                       thumbStyle={{borderRadius: 2}}
                       trackStyle={{borderRadius: 2}} />
                   </div>
-                  <p>Geolocation?</p>
+                </div>
+              </div>
+              <div className='col-md-4 Setting text-left'>
+                <div className='well'>
+                  <h4>Base Map</h4>
+                  <label>
+                    <Checkbox
+                      disabled={!this.state.showMap}
+                      checked={this.state.randomMap}
+                      onChange={this.onChangeRandomMap.bind(this)} />
+                    &nbsp;
+                    Random
+                  </label>
+                  <hr />
+                  {
+                    TileMap.all().map(function (tileMap) {
+                      return (
+                        <label key={tileMap.id}>
+                          <Radio
+                            value={tileMap.id}
+                            checked={this.state.mapId === tileMap.id}
+                            onChange={this.onMapChange.bind(this)}
+                            disabled={!this.state.showMap || this.state.randomMap} />
+                          &nbsp;
+                          {tileMap.name}
+                        </label>
+                      );
+                    }.bind(this))
+                  }
                 </div>
               </div>
             </div>
@@ -215,7 +274,7 @@ class App extends Component {
           className='WeatherMap'
           onMoveEnd={this.onMapMoveEnd}>
           <TileLayer
-            url={tileUrl}
+            url={this.state.mapTileUrl}
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' />
           {marker}
         </Map>

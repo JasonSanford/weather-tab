@@ -35,12 +35,23 @@
 }
 
 .Setting {
-  text-align: center;
   padding: 0 10px;
 }
 
-.Setting p {
-  margin-bottom: 0;
+.Setting.middle {
+  padding: 0;
+}
+
+.Setting.text-centered {
+  text-align: center;
+}
+
+.Setting.text-left {
+  text-align: left;
+}
+
+.Setting label {
+  display: block;
 }
 
 .ModalClose {
