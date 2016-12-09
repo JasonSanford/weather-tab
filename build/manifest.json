@@ -8,6 +8,7 @@
   "content_security_policy": "script-src 'self' https://api.darksky.net; object-src 'self'",
   "permissions": [
     "geolocation",
+    "storage",
     "https://api.darksky.net/*"
   ],
   "manifest_version": 2
