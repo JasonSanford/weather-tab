@@ -1,7 +1,7 @@
 {
   "name": "Weather Tab",
-  "description": "Show your current location and weather in new tabs",
-  "version": "0.2",
+  "description": "Show your current location and weather in new tabs.",
+  "version": "0.0.1",
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
