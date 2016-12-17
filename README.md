@@ -1,5 +1,7 @@
 ## Weather Tab
 
+This is a Chrome extension to show your current location and weather in new tabs.
+
 I stole most of the ideas here from [MapTab](https://github.com/bsudekum/MapTab), but instead of showing a random location on a pretty map, we show your current location on a pretty map with the current weather.
 
 ![](screenshots/1.png)
@@ -16,7 +18,7 @@ I'm using my personal Mapbox and DarkSky tokens for this project right now, so I
 
 ### Developing
 
-This project uses react-scripts(https://www.npmjs.com/package/react-scripts), so you should check there for detailed instructions but it's mostly just:
+This project uses [react-scripts](https://www.npmjs.com/package/react-scripts), so you should check there for detailed instructions but it's mostly just:
 
 ```
 cd /path/to/weather-tab

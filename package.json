@@ -1,6 +1,7 @@
 {
   "name": "weather-tab",
-  "version": "0.1.0",
+  "description": "A Chrome extension to show your current location and weather in new tabs",
+  "version": "0.0.0",
   "private": true,
   "devDependencies": {
     "react-scripts": "0.7.0"
