@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import { Button, Glyphicon, Modal } from 'react-bootstrap';
-import Checkbox from 'rc-checkbox';
 import Radio from 'rc-radio';
-import ToggleButton from 'react-toggle-button';
 import classNames from 'classnames';
 import L from 'leaflet';
 
@@ -13,7 +11,6 @@ import { TileMap } from './tilemap';
 import * as storage from './storage';
 import Overlay from './Overlay';
 
-import 'rc-checkbox/assets/index.css';
 import './App.css';
 
 const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
@@ -35,32 +32,30 @@ class App extends Component {
     });
 
     const mapId = storage.getItem('mapId', 'random');
-
     const location = storage.getItem('lastLocation', constants.DEFAULT_LOCATION);
     const zoom = storage.getItem('zoom', 13);
-    const showMap = storage.getItem('showMap', true);
-    const geolocation = storage.getItem('geolocation', true);
+    const showMap = (mapId != 0);
     const mapTileUrl = this.getMapTileUrl(mapId);
 
     this.state = {
       showMap,
-      geolocation,
       location,
       zoom,
       mapTileUrl,
-      randomMap: (mapId === 'random'),
-      mapId: (mapId === 'random' ? 1 : mapId),
+      mapId,
       userLocation: null,
       showModal: false,
       settingsButtonHovered: false
     };
 
-    if (geolocation) {
-      this.updateLocation();
-    }
+    this.updateLocation();
   }
 
   getMapTileUrl(mapId) {
+    if (mapId == 0) {
+      return null;
+    }
+
     const map = (mapId === 'random') ? TileMap.random() : TileMap.byId(mapId);
 
     return `https://api.mapbox.com/styles/v1/${map.mapboxId}/tiles/256/{z}/{x}/{y}@2x?access_token=${map.token}`
@@ -105,12 +100,13 @@ class App extends Component {
   onMapMoveEnd(event) {
     const center = event.target.getCenter();
     const lastLocation = [center.lat, center.lng];
+    const location = lastLocation;
     const zoom = event.target.getZoom();
 
     storage.setItem('lastLocation', lastLocation);
     storage.setItem('zoom', zoom);
 
-    this.setState({ lastLocation, zoom });
+    this.setState({ location, lastLocation, zoom });
   }
 
   openModal(event) {
@@ -122,47 +118,14 @@ class App extends Component {
     this.setState({showModal: false});
   }
 
-  onToggleShowMap(value) {
-    const showMap = !value;
-
-    storage.setItem('showMap', showMap);
-
-    this.setState({ showMap });
-  }
-
-  onToggleGeolocation(value) {
-    const geolocation = !value;
-    const userLocation = null;
-
-    storage.setItem('geolocation', geolocation);
-
-    this.setState({ geolocation, userLocation }, function () {
-      if (geolocation) {
-        this.updateLocation();
-      }
-    }.bind(this));
-  }
-
-  onChangeRandomMap(event) {
-    const checked = event.target.checked;
-    const mapId = checked ? 'random' : this.state.mapId;
-    const mapTileUrl = this.getMapTileUrl(mapId);
-
-    storage.setItem('mapId', mapId);
-
-    this.setState({
-      randomMap: checked,
-      mapTileUrl
-    });
-  }
-
   onMapChange(event) {
     const mapId = event.target.value;
+    const showMap = (mapId != 0);
     const mapTileUrl = this.getMapTileUrl(mapId);
 
     storage.setItem('mapId', mapId);
 
-    this.setState({ mapId, mapTileUrl });
+    this.setState({ mapId, mapTileUrl, showMap });
   }
 
   render() {
@@ -187,45 +150,17 @@ class App extends Component {
           show={this.state.showModal}
           onHide={this.closeModal}>
           <Modal.Body>
-            <h2>Settings</h2>
+            <h2>Base Map</h2>
             <div className='row'>
-              <div className='col-md-4 Setting text-centered'>
+              <div className='col-md-4 col-md-offset-4 Setting'>
                 <div className='well'>
-                  <h4>Show Map</h4>
-                  <div className='ToggleContainer'>
-                    <ToggleButton
-                      className='Toggle'
-                      value={this.state.showMap}
-                      onToggle={this.onToggleShowMap.bind(this)}
-                      thumbStyle={{borderRadius: 2}}
-                      trackStyle={{borderRadius: 2}} />
-                  </div>
-                </div>
-              </div>
-              <div className='col-md-4 Setting middle text-centered'>
-                <div className='well'>
-                  <h4>Geolocation</h4>
-                  <div className='ToggleContainer'>
-                    <ToggleButton
-                      value={this.state.geolocation}
-                      onToggle={this.onToggleGeolocation.bind(this)}
-                      thumbStyle={{borderRadius: 2}}
-                      trackStyle={{borderRadius: 2}} />
-                  </div>
-                </div>
-              </div>
-              <div className='col-md-4 Setting text-left'>
-                <div className='well'>
-                  <h4>Base Map</h4>
-                  <label>
-                    <Checkbox
-                      disabled={!this.state.showMap}
-                      checked={this.state.randomMap}
-                      onChange={this.onChangeRandomMap.bind(this)} />
-                    &nbsp;
+                  <label key={'random'}>
+                    <Radio
+                      value={'random'}
+                      checked={this.state.mapId === 'random'}
+                      onChange={this.onMapChange.bind(this)} />
                     Random
                   </label>
-                  <hr />
                   {
                     TileMap.all().map(function (tileMap) {
                       return (
@@ -233,14 +168,19 @@ class App extends Component {
                           <Radio
                             value={tileMap.id}
                             checked={this.state.mapId === tileMap.id}
-                            onChange={this.onMapChange.bind(this)}
-                            disabled={!this.state.showMap || this.state.randomMap} />
-                          &nbsp;
+                            onChange={this.onMapChange.bind(this)} />
                           {tileMap.name}
                         </label>
                       );
                     }.bind(this))
                   }
+                  <label key={'0'}>
+                    <Radio
+                      value={0}
+                      checked={this.state.mapId == 0}
+                      onChange={this.onMapChange.bind(this)} />
+                    None
+                  </label>
                 </div>
               </div>
             </div>
@@ -261,7 +201,7 @@ class App extends Component {
     if (this.state.showMap) {
       let marker;
 
-      if (this.state.geolocation && this.state.userLocation) {
+      if (this.state.userLocation) {
         marker = (
           <Marker
             position={this.state.userLocation}
@@ -279,7 +219,7 @@ class App extends Component {
           onMoveEnd={this.onMapMoveEnd}>
           <TileLayer
             url={this.state.mapTileUrl}
-            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' />
+            attribution='© <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>' />
           {marker}
         </Map>
       );

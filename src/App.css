@@ -25,41 +25,16 @@
   margin-bottom: 30px;
 }
 
-.ToggleContainer {
-  display: inline-block;
-  margin-bottom: 10px;
-}
-
-.Toggle {
-  display: inline-block !important;
-}
-
 .Setting {
   padding: 0 10px;
-}
-
-.Setting.middle {
-  padding: 0;
-}
-
-.Setting.text-centered {
-  text-align: center;
-}
-
-.Setting.text-left {
-  text-align: left;
 }
 
 .Setting label {
   display: block;
 }
 
-.ModalClose {
-  position: absolute;
-  top: 0;
-  left:0;
-  cursor: pointer;
-  padding-left: -40px;
+.Setting .rc-radio {
+  margin-right: 8px;
 }
 
 .WeatherMap {
