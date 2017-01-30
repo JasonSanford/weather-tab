@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Map, TileLayer, Marker } from 'react-leaflet';
+import { Map, TileLayer, Marker, AttributionControl } from 'react-leaflet';
 import { Button, Glyphicon, Modal } from 'react-bootstrap';
 import Radio from 'rc-radio';
 import classNames from 'classnames';
@@ -216,7 +216,10 @@ class App extends Component {
           zoom={this.state.zoom}
           zoomControl={false}
           className='WeatherMap'
-          onMoveEnd={this.onMapMoveEnd}>
+          onMoveEnd={this.onMapMoveEnd}
+          attributionControl={false}>
+          <AttributionControl
+            prefix={'Weather Powered By <a target="_blank" href="https://darksky.net/poweredby/">Dark Sky</a>'} />
           <TileLayer
             url={this.state.mapTileUrl}
             attribution='© <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>' />
