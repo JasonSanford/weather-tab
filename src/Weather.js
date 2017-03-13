@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import distance from 'turf-distance';
 import { Glyphicon } from 'react-bootstrap';
 
-import DarkSky from './darksky'
+import DarkSky from './darksky';
 import { DARKSKEY_KEY } from './constants';
 
 import './Weather.css';
@@ -19,6 +19,7 @@ class Weather extends Component {
     this.state = {
       temperature: null,
       summary: '',
+      alerts: [],
       location: props.location
     };
 
@@ -72,6 +73,22 @@ class Weather extends Component {
       <div className='Weather'>
         <h2 className='Temperature'>{temp}</h2>
         <h3 className='Summary'>{this.state.summary}</h3>
+        <ul className='Alerts'>
+          {
+            this.state.alerts.map(function (alert) {
+              return (
+                <li key={alert.uri}>
+                  <Glyphicon glyph='warning-sign' />
+                  <a
+                    href={alert.uri}
+                    target="_blank">
+                    {alert.title}
+                  </a>
+                </li>
+              )
+            })
+          }
+        </ul>
       </div>
     );
   }
@@ -97,6 +114,7 @@ class Weather extends Component {
       }
 
       let temp, summary = '';
+      let alerts = [];
 
       if (response.currently) {
         if (response.currently.temperature) {
@@ -108,9 +126,14 @@ class Weather extends Component {
         }
       }
 
+      if (response.alerts) {
+        alerts = response.alerts;
+      }
+
       this.setState({
         temperature: temp,
-        summary: summary
+        summary: summary,
+        alerts: alerts
       });
     }.bind(this))
   }

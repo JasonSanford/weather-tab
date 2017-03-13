@@ -15,3 +15,34 @@
   margin-top: 0;
   font-size: 30px;
 }
+
+.Weather ul.Alerts {
+  -webkit-padding-start: 0;
+  list-style: none;
+}
+
+.Weather ul.Alerts li {
+  color: #FA3F39;
+  font-size: 1.3em;
+  font-weight: lighter;
+  transition: color 0.4s;
+}
+
+.Weather ul.Alerts li span.glyphicon {
+  margin-right: 10px;
+}
+
+.Weather ul.Alerts li a {
+  color: #FA3F39;
+  pointer-events: all;
+  text-decoration: none;
+  transition: color 0.4s;
+}
+
+.Weather ul.Alerts li:hover {
+  color: #FFA59F;
+}
+
+.Weather ul.Alerts li:hover a {
+  color: #FFA59F;
+}
