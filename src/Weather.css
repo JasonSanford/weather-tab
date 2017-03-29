@@ -19,7 +19,7 @@
 .Weather .ForecastLink {
   pointer-events: all;
   text-decoration: none;
-  display: block;
+  display: inline-block;
   margin-bottom: 10px;
   color: #fff;
   transition: color 0.2s;
