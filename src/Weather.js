@@ -69,16 +69,21 @@ class Weather extends Component {
   render() {
     const temp = this.renderTemperature();
     const forecastHref = `https://darksky.net/forecast/${this.state.location[0]},${this.state.location[1]}`
+    let forecastAnchor = null;
+
+    if (this.haveMadeInitialFetch) {
+      forecastAnchor = <a
+        className='ForecastLink'
+        href={forecastHref}>
+        view forecast
+      </a>;
+    }
 
     return (
       <div className='Weather'>
         <h2 className='Temperature'>{temp}</h2>
         <h3 className='Summary'>{this.state.summary}</h3>
-        <a
-          className='ForecastLink'
-          href={forecastHref}>
-          view forecast
-        </a>
+        {forecastAnchor}
         <ul className='Alerts'>
           {
             this.state.alerts.map(function (alert) {
